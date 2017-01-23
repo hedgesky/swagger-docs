@@ -61,10 +61,10 @@ module Swagger
         end
 
         def generate_doc(api_version, settings, config)
-          root = { 
-            "apiVersion" => api_version, 
-            "swaggerVersion" => "1.2", 
-            "basePath" => settings[:base_path], 
+          root = {
+            "apiVersion" => api_version,
+            "swaggerVersion" => "1.2",
+            "basePath" => settings[:base_path],
             :apis => [],
             :authorizations => settings[:authorizations]
           }
@@ -84,6 +84,7 @@ module Swagger
               root[:apis] << resource_api
             end
           end
+          root['basePath'] = settings[:api_file_path].sub("public/", "")
           root['resources'] = resources
           results[:root] = root
           results
@@ -139,7 +140,7 @@ module Swagger
           return {action: :skipped, path: path, reason: :not_kind_of_parent_controller} if config[:parent_controller] && !(klass < config[:parent_controller])
           apis, models, defined_nicknames = [], {}, []
           routes.select{|i| i.defaults[:controller] == path}.each do |route|
-            unless nickname_defined?(defined_nicknames, path, route) # only add once for each route once e.g. PATCH, PUT 
+            unless nickname_defined?(defined_nicknames, path, route) # only add once for each route once e.g. PATCH, PUT
               ret = get_route_path_apis(path, route, klass, settings, config)
               apis = apis + ret[:apis]
               models.merge!(ret[:models])
